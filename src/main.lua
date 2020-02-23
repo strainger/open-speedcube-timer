@@ -18,6 +18,9 @@ function love.load(func, chunkname)
 	display.text = love.graphics.newText(display.font, "")
 	display.x = 0
 	display.y = 0
+	display.backgroundColor = {0.157, 0.157, 0.157}
+	display.accentColor = {0.596, 0.592, 0.102}
+	display.fontColor = {0.922, 0.859, 0.698}
 end
 
 function start()
@@ -27,7 +30,7 @@ function start()
 	heldTime = 0.000
 	startTime = love.timer.getTime()
 	running = true
-	textColor = {1, 1, 1, 1}
+	textColor = display.fontColor
 end
 
 function stop()
@@ -38,18 +41,18 @@ end
 
 function held()
 	heldTime = love.timer.getTime()
-	textColor = {0, 1, 1, 1}
+	textColor = display.accentColor
 end
 
 function early()
-	textColor = {1, 1, 1, 1}
+	textColor = display.fontColor
 end
 
 function ready()
 	if (running == false and (love.timer.getTime() - heldTime) > waitTime and love.keyboard.isDown("space")) then
-		textColor = {0, 1, 0, 1}
+		textColor = display.accentColor
 	else
-		textColor = {1, 1, 1, 1}
+		textColor = display.fontColor
 	end
 end
 
@@ -70,6 +73,7 @@ function love.update(dt)
 end
 
 function love.draw()
+	love.graphics.setBackgroundColor(display.backgroundColor)
 	love.graphics.setColor(textColor)
 	love.graphics.draw(display.text, display.x, display.y)
 end
