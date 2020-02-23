@@ -1,11 +1,23 @@
+function love.conf(t)
+	t.window.width = 800
+	t.window.height = 400
+	t.modules.joystick = false
+	t.modules.physics = false
+end
+
 function love.load(func, chunkname)
-	font = love.graphics.setNewFont(40)
 	currentTime = 0.000	
 	startTime = 0.000	
 	stopTime = 0.000	
 	running = false
 	heldTime = 0.000
 	textColor = {1, 1, 1, 1}
+	waitTime = 1
+	display = {}
+	display.font = love.graphics.setNewFont("fonts/fantasquesansmono-bold.otf", 100)
+	display.text = love.graphics.newText(display.font, "")
+	display.x = 0
+	display.y = 0
 end
 
 function start()
@@ -34,15 +46,22 @@ function early()
 end
 
 function ready()
-	if (running == false and (love.timer.getTime() - heldTime) > 2 and love.keyboard.isDown("space")) then
+	if (running == false and (love.timer.getTime() - heldTime) > waitTime and love.keyboard.isDown("space")) then
 		textColor = {0, 1, 0, 1}
 	else
 		textColor = {1, 1, 1, 1}
 	end
 end
 
+function populateText()
+	display.text:set(string.format("%.3f", currentTime))
+	display.x = love.graphics.getWidth()/2 - display.text:getWidth()/2
+	display.y = love.graphics.getHeight()/2 - display.text:getHeight()/2
+end
+
 function love.update(dt)
 	ready()
+	populateText()
 	if running == true then
 		currentTime = (love.timer.getTime() - startTime)
 	else
@@ -52,23 +71,23 @@ end
 
 function love.draw()
 	love.graphics.setColor(textColor)
-	love.graphics.print(string.format("%.3f", currentTime), 100, 100)
+	love.graphics.draw(display.text, display.x, display.y)
 end
 
 function love.keyreleased(key)
-	if key == "escape" then
-		love.event.quit()
-	end
-	if (key == "space" and running == false and (love.timer.getTime() - heldTime) > 2) then
+	if (key == "space" and running == false and (love.timer.getTime() - heldTime) > waitTime) then
 		start()
 	end
-	if (key == "space" and running == false and (love.timer.getTime() - heldTime) < 2) then
+	if (key == "space" and running == false and (love.timer.getTime() - heldTime) < waitTime) then
 		early()
 	end
 end
 
 function love.keypressed(key)
-	if (key == "space" and running == true) then
+	if (key == "escape" and running == false) then
+		love.event.quit()
+	end
+	if running == true then
 		stop()
 	end
 	if (key == "space" and running == false) then
